@@ -8,7 +8,7 @@ import LiveFeed from '../components/LiveFeed';
 import ScoreGauge, { getScoreColor } from '../components/ScoreGauge';
 import { IconLoader, IconArrowRight, IconGlobe, IconCode, IconTerminal } from '../components/Icons';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 const CORE_PERSONAS = ['rage-clicker', 'half-fill-user', 'confused-navigator'];
 const RESILIENCE_PERSONAS = ['slow-network-user', 'viewport-shifter', 'multi-tab-user', 'permission-denier'];
 

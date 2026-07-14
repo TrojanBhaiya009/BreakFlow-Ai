@@ -12,7 +12,7 @@ import {
   IconCode, IconCheck,
 } from '../../components/Icons';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export default function ReportPage({ params }) {
   const { id } = use(params);
