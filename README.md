@@ -14,17 +14,7 @@ The app produces a resilience score, issue list, live runner log, screenshot evi
 6. The logger groups duplicate findings, captures screenshot evidence, and stores the result.
 7. The report page shows the resilience score, issue severity, affected persona, screenshot evidence, recommended fixes, and export options.
 
-## Hackathon Pitch
-
-Traditional QA checks whether the normal user path works. BreakFlow checks whether the product survives real-world user chaos.
-
-Use this story in a demo:
-
-1. Open the dashboard.
-2. Run BreakFlow against a demo checkout, signup, or dashboard app.
-3. Show an issue found by a persona such as Impatient Buyer or Distracted Signup.
-4. Open the report and point to the screenshot evidence.
-5. Show the repair recommendation and resilience score.
+.
 
 ## Personas
 
