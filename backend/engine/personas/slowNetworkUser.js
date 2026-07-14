@@ -6,7 +6,7 @@
  */
 
 export const metadata = {
-  name: 'Slow Network User',
+  name: 'Bad Wi-Fi User',
   icon: '🟠',
   description: 'Simulates slow network, delayed responses, timeouts, and retries',
   detects: ['timeout issues', 'missing loading states', 'retry bugs', 'stale sessions']
@@ -40,7 +40,7 @@ export async function execute(page, url, logger) {
 
       if (loadTime > 15000) {
         logger.addIssue({
-          persona: 'Slow Network User',
+          persona: 'Bad Wi-Fi User',
           severity: 'warning',
           category: 'timeout',
           title: 'Extremely Slow Page Load',
@@ -58,7 +58,7 @@ export async function execute(page, url, logger) {
 
       if (!hasLoadingIndicator && loadTime > 5000) {
         logger.addIssue({
-          persona: 'Slow Network User',
+          persona: 'Bad Wi-Fi User',
           severity: 'info',
           category: 'timeout',
           title: 'No Loading Indicator on Slow Network',
@@ -69,7 +69,7 @@ export async function execute(page, url, logger) {
 
     } catch (e) {
       logger.addIssue({
-        persona: 'Slow Network User',
+        persona: 'Bad Wi-Fi User',
         severity: 'critical',
         category: 'timeout',
         title: 'Page Failed to Load on Slow Network',
@@ -111,7 +111,7 @@ export async function execute(page, url, logger) {
           const elapsed = Date.now() - clickStart;
           if (elapsed > 3000) {
             logger.addIssue({
-              persona: 'Slow Network User',
+              persona: 'Bad Wi-Fi User',
               severity: 'info',
               category: 'timeout',
               title: 'No Feedback During Slow Action',
@@ -164,7 +164,7 @@ export async function execute(page, url, logger) {
 
     if (offlineError === 'no_offline_handling') {
       logger.addIssue({
-        persona: 'Slow Network User',
+        persona: 'Bad Wi-Fi User',
         severity: 'info',
         category: 'network_error',
         title: 'No Offline State Handling',
@@ -190,7 +190,7 @@ export async function execute(page, url, logger) {
       emit('App recovered after going back online');
     } catch (e) {
       logger.addIssue({
-        persona: 'Slow Network User',
+        persona: 'Bad Wi-Fi User',
         severity: 'critical',
         category: 'network_error',
         title: 'Failed to Recover After Reconnection',
@@ -223,7 +223,7 @@ export async function execute(page, url, logger) {
           await page.waitForTimeout(2000);
         } catch (e) {
           logger.addIssue({
-            persona: 'Slow Network User',
+            persona: 'Bad Wi-Fi User',
             severity: 'warning',
             category: 'stale_session',
             title: 'Interaction Failed After Delay',
@@ -237,12 +237,12 @@ export async function execute(page, url, logger) {
     // Clean up CDP session
     await cdp.detach().catch(() => {});
 
-    emit('Slow Network User persona completed');
+    emit('Bad Wi-Fi User persona completed');
 
   } catch (error) {
     emit(`Persona error: ${error.message}`);
     logger.addIssue({
-      persona: 'Slow Network User',
+      persona: 'Bad Wi-Fi User',
       severity: 'warning',
       category: 'navigation_error',
       title: 'Persona Execution Error',

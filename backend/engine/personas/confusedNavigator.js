@@ -6,7 +6,7 @@
  */
 
 export const metadata = {
-  name: 'Confused Navigator',
+  name: 'Lost Visitor',
   icon: '🟣',
   description: 'Random back/forward navigation, refresh, clicks random links',
   detects: ['broken redirects', 'dead-end pages', 'navigation errors', 'state corruption']
@@ -68,7 +68,7 @@ export async function execute(page, url, logger) {
               // Check if back actually worked
               if (page.url() === 'about:blank') {
                 logger.addIssue({
-                  persona: 'Confused Navigator',
+                  persona: 'Lost Visitor',
                   severity: 'warning',
                   category: 'navigation_error',
                   title: 'Back Navigation Led to Blank Page',
@@ -104,7 +104,7 @@ export async function execute(page, url, logger) {
               const afterRefreshUrl = page.url();
               if (afterRefreshUrl !== beforeRefreshUrl) {
                 logger.addIssue({
-                  persona: 'Confused Navigator',
+                  persona: 'Lost Visitor',
                   severity: 'warning',
                   category: 'broken_redirect',
                   title: 'URL Changed After Refresh',
@@ -134,7 +134,7 @@ export async function execute(page, url, logger) {
               const elapsed = Date.now() - startCheck;
               if (elapsed > 3000) {
                 logger.addIssue({
-                  persona: 'Confused Navigator',
+                  persona: 'Lost Visitor',
                   severity: 'critical',
                   category: 'ui_freeze',
                   title: 'UI Freeze After Rapid Navigation',
@@ -144,7 +144,7 @@ export async function execute(page, url, logger) {
               }
             } catch (e) {
               logger.addIssue({
-                persona: 'Confused Navigator',
+                persona: 'Lost Visitor',
                 severity: 'critical',
                 category: 'ui_freeze',
                 title: 'Page Crashed During Rapid Navigation',
@@ -181,7 +181,7 @@ export async function execute(page, url, logger) {
             bodyText.toLowerCase().includes('page not found') ||
             bodyText.toLowerCase().includes('404')) {
           logger.addIssue({
-            persona: 'Confused Navigator',
+            persona: 'Lost Visitor',
             severity: 'warning',
             category: 'navigation_error',
             title: '404 Page Reached',
@@ -200,7 +200,7 @@ export async function execute(page, url, logger) {
       const uniqueDeadEnds = [...new Set(deadEnds)];
       for (const deadEnd of uniqueDeadEnds) {
         logger.addIssue({
-          persona: 'Confused Navigator',
+          persona: 'Lost Visitor',
           severity: 'info',
           category: 'navigation_error',
           title: 'Dead-End Page Detected',
@@ -210,12 +210,12 @@ export async function execute(page, url, logger) {
       }
     }
 
-    emit(`Confused Navigator completed. Visited ${visitedUrls.size} unique pages.`);
+    emit(`Lost Visitor completed. Visited ${visitedUrls.size} unique pages.`);
 
   } catch (error) {
     emit(`Persona error: ${error.message}`);
     logger.addIssue({
-      persona: 'Confused Navigator',
+      persona: 'Lost Visitor',
       severity: 'warning',
       category: 'navigation_error',
       title: 'Persona Execution Error',

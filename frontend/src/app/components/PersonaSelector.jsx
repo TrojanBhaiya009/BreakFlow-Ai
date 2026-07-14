@@ -5,61 +5,93 @@ import { IconCheck } from './Icons';
 export const PERSONAS = [
   {
     id: 'rage-clicker',
-    name: 'Rage Clicker',
-    description: 'Rapid clicking on all interactive elements',
+    name: 'Impatient Buyer',
+    description: 'Rapid clicks and repeated actions under pressure',
     color: '#789CAE',
     detects: ['Duplicate submissions', 'UI freezes', 'Race conditions'],
   },
   {
     id: 'half-fill-user',
-    name: 'Half-Fill User',
-    description: 'Partial form fills, abandoned workflows',
+    name: 'Distracted Signup',
+    description: 'Partial forms, empty required fields, abandoned flows',
     color: '#D56F61',
     detects: ['Missing validation', 'Partial submission bugs'],
   },
   {
     id: 'confused-navigator',
-    name: 'Confused Navigator',
-    description: 'Random back/forward, page refresh cycles',
+    name: 'Lost Visitor',
+    description: 'Random back, forward, refresh, and route changes',
     color: '#8E8678',
     detects: ['Broken redirects', 'Navigation errors', 'State corruption'],
   },
   {
     id: 'slow-network-user',
-    name: 'Slow Network User',
-    description: 'Throttled network, offline transitions',
+    name: 'Bad Wi-Fi User',
+    description: 'Slow network, latency, offline transitions',
     color: '#C28A4B',
     detects: ['Timeout issues', 'Missing loading states'],
   },
   {
     id: 'contradictory-input-user',
-    name: 'Contradictory Input',
-    description: 'XSS, SQL injection, edge-case inputs',
+    name: 'Hostile Inputter',
+    description: 'XSS strings, SQL-like text, extreme values',
     color: '#78B58A',
     detects: ['Injection vulnerabilities', 'Type coercion bugs'],
   },
   {
     id: 'viewport-shifter',
-    name: 'Viewport Shifter',
+    name: 'Small-Screen User',
     description: 'Mobile, tablet, and narrow desktop resizing',
     color: '#55A79C',
     detects: ['Horizontal overflow', 'Tiny tap targets', 'Broken responsive states'],
   },
   {
     id: 'multi-tab-user',
-    name: 'Multi-Tab User',
+    name: 'Power Tabber',
     description: 'Parallel tabs sharing session and form state',
     color: '#A68852',
     detects: ['Duplicate actions', 'Storage collisions', 'Stale UI'],
   },
   {
     id: 'permission-denier',
-    name: 'Permission Denier',
+    name: 'Privacy-First User',
     description: 'Blocks location, camera, notifications, clipboard',
     color: '#5A9BA8',
     detects: ['Missing fallbacks', 'Permission loops', 'Blocked workflows'],
   },
 ];
+
+export const PERSONA_NAME_BY_ID = Object.fromEntries(PERSONAS.map((persona) => [persona.id, persona.name]));
+
+const LEGACY_PERSONA_NAMES = {
+  'rage clicker': 'Impatient Buyer',
+  'half fill user': 'Distracted Signup',
+  'confused navigator': 'Lost Visitor',
+  'slow network user': 'Bad Wi-Fi User',
+  'contradictory input user': 'Hostile Inputter',
+  'contradictory input': 'Hostile Inputter',
+  'viewport shifter': 'Small-Screen User',
+  'multi tab user': 'Power Tabber',
+  'permission denier': 'Privacy-First User',
+};
+
+export function formatPersonaName(value = '') {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+
+  if (raw.includes(',')) {
+    return raw
+      .split(',')
+      .map((part) => formatPersonaName(part))
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  if (PERSONA_NAME_BY_ID[raw]) return PERSONA_NAME_BY_ID[raw];
+
+  const normalized = raw.toLowerCase().replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+  return LEGACY_PERSONA_NAMES[normalized] || raw;
+}
 
 export default function PersonaSelector({ selected, onToggle, disabled = false }) {
   return (

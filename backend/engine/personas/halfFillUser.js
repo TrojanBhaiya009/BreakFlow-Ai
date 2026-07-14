@@ -6,7 +6,7 @@
  */
 
 export const metadata = {
-  name: 'Half-Fill User',
+  name: 'Distracted Signup',
   icon: '🟡',
   description: 'Fills forms partially, leaves fields empty, submits incomplete data',
   detects: ['missing validation', 'partial submission bugs', 'abandoned workflow issues']
@@ -140,7 +140,7 @@ export async function execute(page, url, logger) {
 
           if (filledCount === 0 && inputsAgain.length > 0) {
             logger.addIssue({
-              persona: 'Half-Fill User',
+              persona: 'Distracted Signup',
               severity: 'info',
               category: 'navigation_error',
               title: 'Form Data Lost on Navigation',
@@ -152,12 +152,12 @@ export async function execute(page, url, logger) {
       }
     }
 
-    emit('Half-Fill User persona completed');
+    emit('Distracted Signup persona completed');
 
   } catch (error) {
     emit(`Persona error: ${error.message}`);
     logger.addIssue({
-      persona: 'Half-Fill User',
+      persona: 'Distracted Signup',
       severity: 'warning',
       category: 'navigation_error',
       title: 'Persona Execution Error',
@@ -219,7 +219,7 @@ async function trySubmitForm(form, page, logger, emit, strategy) {
 
         if (!hasError) {
           logger.addIssue({
-            persona: 'Half-Fill User',
+            persona: 'Distracted Signup',
             severity: 'warning',
             category: 'input_validation',
             title: `Form Accepted ${strategy} Submission`,

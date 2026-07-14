@@ -154,11 +154,11 @@ export default function Home() {
                   <div className="dim">Opening Chromium context...</div>
                   <div className="dim">Applying 8 behavior profiles...</div>
                   <div style={{ height: 8 }} />
-                  <div><span className="ok">PASS</span> Viewport Shifter - no overflow</div>
-                  <div><span className="warn">WARN</span> Half-Fill User - missing validation</div>
-                  <div><span className="err">FAIL</span> Rage Clicker - duplicate submit</div>
-                  <div><span className="ok">PASS</span> Permission Denier - fallback shown</div>
-                  <div><span className="warn">WARN</span> Slow Network - empty loading state</div>
+                  <div><span className="ok">PASS</span> Small-Screen User - no overflow</div>
+                  <div><span className="warn">WARN</span> Distracted Signup - missing validation</div>
+                  <div><span className="err">FAIL</span> Impatient Buyer - duplicate submit</div>
+                  <div><span className="ok">PASS</span> Privacy-First User - fallback shown</div>
+                  <div><span className="warn">WARN</span> Bad Wi-Fi User - empty loading state</div>
                   <div style={{ height: 8 }} />
                   <div>Score: <span className="warn">74/100</span> (B-)</div>
                   <div style={{ marginTop: '3px' }}>
@@ -228,30 +228,28 @@ export default function Home() {
 
           <div className="persona-grid" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-            gap: 'var(--space-3)',
+            gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+            gap: 'var(--space-4)',
             marginTop: 'var(--space-12)',
           }}>
-            {PERSONAS.map((p) => (
-              <div key={p.id} className="card card-hover" style={{
-                padding: 'var(--space-5)',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-3)' }}>
-                  <div className="persona-dot" style={{ background: p.color }} />
-                  <h3 style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{p.name}</h3>
+            {PERSONAS.map((p, index) => (
+              <div key={p.id} className="card card-hover persona-card">
+                <div className="persona-card-header">
+                  <div className="persona-num" style={{
+                    borderColor: `${p.color}55`,
+                    color: p.color,
+                    background: `${p.color}12`,
+                  }}>
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
+                  <h3 className="persona-title">{p.name}</h3>
                 </div>
-                <p style={{ fontSize: '0.75rem', color: 'var(--muted)', lineHeight: 1.5 }}>
+                <p className="persona-desc">
                   {p.description}
                 </p>
-                <div style={{
-                  marginTop: 'var(--space-3)',
-                  display: 'flex', flexWrap: 'wrap', gap: '3px',
-                }}>
+                <div className="persona-tags">
                   {p.detects.map((tag) => (
-                    <span key={tag} className="badge badge-neutral" style={{
-                      fontSize: '0.5625rem', padding: '1px 5px',
-                      textTransform: 'none', letterSpacing: 'normal',
-                    }}>
+                    <span key={tag} className="persona-tag">
                       {tag}
                     </span>
                   ))}

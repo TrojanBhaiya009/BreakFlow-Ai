@@ -392,9 +392,71 @@ a:hover { color: #7EC4BA; }
 }
 
 /* =============================================
-   PERSONA DOT
+   PERSONA CARDS
    ============================================= */
-.persona-dot { width: 10px; height: 10px; border-radius: 50%; }
+.persona-card {
+  min-height: 248px;
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.persona-card-header {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-3);
+}
+.persona-num {
+  width: 34px;
+  height: 28px;
+  border: 1px solid;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.persona-title {
+  min-height: 38px;
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 650;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.persona-desc {
+  min-height: 68px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.persona-tags {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-start;
+}
+.persona-tag {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: rgba(237,231,220,0.045);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
 
 /* =============================================
    ATTACK LOG
@@ -494,9 +556,12 @@ a:hover { color: #7EC4BA; }
   .summary-grid { grid-template-columns: 1fr !important; }
   .hero-grid { grid-template-columns: 1fr !important; }
   .feature-grid,
-  .persona-grid,
   .coverage-grid,
   .process-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: var(--space-3) !important;
+  }
+  .persona-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: var(--space-3) !important;
   }
@@ -505,7 +570,11 @@ a:hover { color: #7EC4BA; }
 @media (max-width: 480px) {
   .text-display { font-size: 1.875rem; }
   .feature-grid,
+  .persona-grid,
   .process-grid {
     grid-template-columns: 1fr !important;
   }
+  .persona-card { min-height: auto; }
+  .persona-title,
+  .persona-desc { min-height: 0; }
 }

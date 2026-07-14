@@ -4,7 +4,23 @@
  * duplicate requests, broken redirects, and uncaught exceptions.
  */
 
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { randomUUID } from 'node:crypto';
 import { deduplicateIssues, getIssueFingerprint, getSeverityCounts } from './issueNormalizer.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const EVIDENCE_ROOT = path.resolve(__dirname, '..', 'evidence');
+
+function safeFilePart(value = 'issue') {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 48) || 'issue';
+}
 
 export class FailureLogger {
   constructor(testRunId, targetUrl = '') {
@@ -22,12 +38,16 @@ export class FailureLogger {
     this.issueKeys = new Map();
     this.networkRequests = new Map();
     this.duplicateTracker = new Map();
+    this.pagesByPersona = new Map();
+    this.evidenceTasks = [];
   }
 
   /**
    * Attach listeners to a Playwright page
    */
   attach(page, persona) {
+    this.pagesByPersona.set(persona, page);
+
     // Console errors
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
@@ -184,7 +204,8 @@ export class FailureLogger {
     const normalizedIssue = {
       ...issue,
       test_run_id: this.testRunId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      details: issue.details || {}
     };
 
     const key = getIssueFingerprint(normalizedIssue);
@@ -198,6 +219,48 @@ export class FailureLogger {
 
     this.issueKeys.set(key, this.issues.length);
     this.issues.push(normalizedIssue);
+    this.captureEvidence(normalizedIssue);
+  }
+
+  captureEvidence(issue) {
+    const page = this.pagesByPersona.get(issue.persona);
+    if (!page || page.isClosed?.()) return;
+
+    const task = (async () => {
+      try {
+        const testDir = path.join(EVIDENCE_ROOT, safeFilePart(this.testRunId));
+        await fs.mkdir(testDir, { recursive: true });
+
+        const filename = `${safeFilePart(issue.category)}-${safeFilePart(issue.title)}-${randomUUID().slice(0, 8)}.png`;
+        const filePath = path.join(testDir, filename);
+        await page.screenshot({
+          path: filePath,
+          fullPage: false,
+          animations: 'disabled'
+        });
+
+        issue.details = {
+          ...(issue.details || {}),
+          evidence: {
+            screenshotUrl: `/evidence/${safeFilePart(this.testRunId)}/${filename}`,
+            capturedAt: new Date().toISOString(),
+            viewport: page.viewportSize?.() || null,
+            pageUrl: page.url?.() || ''
+          }
+        };
+      } catch (e) {
+        // Evidence is helpful for demos, but test runs should not fail if a page
+        // navigates or closes before the screenshot can be captured.
+      }
+    })();
+
+    this.evidenceTasks.push(task);
+  }
+
+  async waitForEvidence() {
+    const tasks = this.evidenceTasks.splice(0);
+    if (tasks.length === 0) return;
+    await Promise.allSettled(tasks);
   }
 
   getIssues() {

@@ -5,7 +5,7 @@
  */
 
 export const metadata = {
-  name: 'Multi-Tab User',
+  name: 'Power Tabber',
   icon: 'tabs',
   description: 'Runs the same workflow in parallel browser tabs',
   detects: ['duplicate actions', 'storage drift', 'stale multi-tab state']
@@ -20,7 +20,7 @@ export async function execute(page, url, logger) {
     emit('Opening target in two tabs...');
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     secondPage = await page.context().newPage();
-    logger.attach(secondPage, 'Multi-Tab User');
+    logger.attach(secondPage, 'Power Tabber');
     await secondPage.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(1200);
 
@@ -37,7 +37,7 @@ export async function execute(page, url, logger) {
 
     if (sharedValue !== 'tab-a') {
       logger.addIssue({
-        persona: 'Multi-Tab User',
+        persona: 'Power Tabber',
         severity: 'info',
         category: 'state_management',
         title: 'Unexpected Local Storage Isolation',
@@ -54,7 +54,7 @@ export async function execute(page, url, logger) {
     const guarded = await submitInParallel(page, secondPage);
     if (guarded === false) {
       logger.addIssue({
-        persona: 'Multi-Tab User',
+        persona: 'Power Tabber',
         severity: 'warning',
         category: 'duplicate_request',
         title: 'Concurrent Action Was Not Guarded',
@@ -63,11 +63,11 @@ export async function execute(page, url, logger) {
       });
     }
 
-    emit('Multi-Tab User persona completed');
+    emit('Power Tabber persona completed');
   } catch (error) {
     emit(`Persona error: ${error.message}`);
     logger.addIssue({
-      persona: 'Multi-Tab User',
+      persona: 'Power Tabber',
       severity: 'warning',
       category: 'state_management',
       title: 'Persona Execution Error',

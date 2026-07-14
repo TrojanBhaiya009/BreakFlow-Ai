@@ -5,13 +5,17 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import testsRouter from './routes/tests.js';
 import reportsRouter from './routes/reports.js';
-import { isCodexActive, getCodexPersonas, runCodexTest } from './engine/codex.js';
+import { getCodexPersonas, getCodexStatus, runCodexTest } from './engine/codex.js';
 import { generateCodexFix } from './engine/recommender.js';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -21,6 +25,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use('/evidence', express.static(path.join(__dirname, 'evidence')));
 
 // Request logging
 app.use((req, res, next) => {
@@ -48,7 +53,7 @@ app.get('/api/personas', (req, res) => {
   res.json([
     {
       id: 'rage-clicker',
-      name: 'Rage Clicker',
+      name: 'Impatient Buyer',
       icon: 'click',
       description: 'Clicks buttons and interactive elements rapidly and repeatedly',
       detects: ['duplicate submissions', 'UI freezes', 'double-processing', 'race conditions'],
@@ -56,7 +61,7 @@ app.get('/api/personas', (req, res) => {
     },
     {
       id: 'half-fill-user',
-      name: 'Half-Fill User',
+      name: 'Distracted Signup',
       icon: 'form',
       description: 'Fills forms partially, leaves fields empty, submits incomplete data',
       detects: ['missing validation', 'partial submission bugs', 'abandoned workflow issues'],
@@ -64,7 +69,7 @@ app.get('/api/personas', (req, res) => {
     },
     {
       id: 'confused-navigator',
-      name: 'Confused Navigator',
+      name: 'Lost Visitor',
       icon: 'route',
       description: 'Random back/forward navigation, refresh, clicks random links',
       detects: ['broken redirects', 'dead-end pages', 'navigation errors', 'state corruption'],
@@ -72,7 +77,7 @@ app.get('/api/personas', (req, res) => {
     },
     {
       id: 'slow-network-user',
-      name: 'Slow Network User',
+      name: 'Bad Wi-Fi User',
       icon: 'network',
       description: 'Simulates slow network, delayed responses, timeouts, and retries',
       detects: ['timeout issues', 'missing loading states', 'retry bugs', 'stale sessions'],
@@ -80,7 +85,7 @@ app.get('/api/personas', (req, res) => {
     },
     {
       id: 'contradictory-input-user',
-      name: 'Contradictory Input User',
+      name: 'Hostile Inputter',
       icon: 'input',
       description: 'Enters invalid, contradictory, and edge-case data in forms',
       detects: ['input validation gaps', 'injection vulnerabilities', 'type coercion bugs'],
@@ -88,7 +93,7 @@ app.get('/api/personas', (req, res) => {
     },
     {
       id: 'viewport-shifter',
-      name: 'Viewport Shifter',
+      name: 'Small-Screen User',
       icon: 'viewport',
       description: 'Resizes through mobile, tablet, and desktop viewports',
       detects: ['horizontal overflow', 'tiny tap targets', 'blocked responsive layouts'],
@@ -96,7 +101,7 @@ app.get('/api/personas', (req, res) => {
     },
     {
       id: 'multi-tab-user',
-      name: 'Multi-Tab User',
+      name: 'Power Tabber',
       icon: 'tabs',
       description: 'Runs the same workflow in parallel browser tabs',
       detects: ['duplicate actions', 'storage drift', 'stale multi-tab state'],
@@ -104,7 +109,7 @@ app.get('/api/personas', (req, res) => {
     },
     {
       id: 'permission-denier',
-      name: 'Permission Denier',
+      name: 'Privacy-First User',
       icon: 'permission',
       description: 'Denies browser capabilities such as location, camera, and notifications',
       detects: ['missing permission fallbacks', 'blocked workflow loops', 'unclear recovery states'],
@@ -115,12 +120,7 @@ app.get('/api/personas', (req, res) => {
 
 // Codex red-teaming endpoints
 app.get('/api/codex/status', (req, res) => {
-  res.json({
-    active: isCodexActive(),
-    message: isCodexActive()
-      ? 'Codex red-teaming is active'
-      : 'Codex is not active — set CODEX_API_KEY in .env',
-  });
+  res.json(getCodexStatus());
 });
 
 app.get('/api/codex/personas', (req, res) => {

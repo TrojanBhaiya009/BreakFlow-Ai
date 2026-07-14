@@ -17,7 +17,7 @@ const RESILIENCE_PERSONAS = ['slow-network-user', 'viewport-shifter', 'multi-tab
    ============================================= */
 const ATTACK_PAYLOADS = {
   'rage-clicker': [
-    '// RageClicker: rapid DOM interaction test',
+    '// ImpatientBuyer: rapid DOM interaction test',
     'const buttons = await page.$$("button, [role=\\"button\\"], a");',
     'for (const btn of buttons) {',
     '  await btn.click({ clickCount: 5, delay: 10 });',
@@ -29,7 +29,7 @@ const ATTACK_PAYLOADS = {
     '}',
   ],
   'half-fill-user': [
-    '// HalfFillUser: partial form submission probe',
+    '// DistractedSignup: partial form submission probe',
     'const forms = await page.$$("form");',
     'for (const form of forms) {',
     '  const inputs = await form.$$("input, textarea, select");',
@@ -41,7 +41,7 @@ const ATTACK_PAYLOADS = {
     '}',
   ],
   'confused-navigator': [
-    '// ConfusedNavigator: navigation chaos test',
+    '// LostVisitor: navigation chaos test',
     'for (let i = 0; i < 8; i++) {',
     '  const links = await page.$$("a[href]");',
     '  const random = links[Math.floor(Math.random() * links.length)];',
@@ -52,7 +52,7 @@ const ATTACK_PAYLOADS = {
     '}',
   ],
   'slow-network-user': [
-    '// SlowNetworkUser: throttled network simulation',
+    '// BadWifiUser: throttled network simulation',
     'const cdp = await page.context().newCDPSession(page);',
     'await cdp.send("Network.emulateNetworkConditions", {',
     '  offline: false,',
@@ -63,7 +63,7 @@ const ATTACK_PAYLOADS = {
     'await page.reload({ waitUntil: "networkidle" });',
   ],
   'contradictory-input-user': [
-    '// ContradictoryInput: injection payload suite',
+    '// HostileInputter: injection payload suite',
     'const payloads = [',
     '  "SELECT * FROM users WHERE 1=1; DROP TABLE users;--",',
     '  "<img src=x onerror=alert(1)>",',
@@ -78,7 +78,7 @@ const ATTACK_PAYLOADS = {
     '}',
   ],
   'viewport-shifter': [
-    '// ViewportShifter: responsive layout probe',
+    '// SmallScreenUser: responsive layout probe',
     'const viewports = [[375, 812], [768, 1024], [1280, 720]];',
     'for (const [width, height] of viewports) {',
     '  await page.setViewportSize({ width, height });',
@@ -90,7 +90,7 @@ const ATTACK_PAYLOADS = {
     '}',
   ],
   'multi-tab-user': [
-    '// MultiTabUser: concurrent session probe',
+    '// PowerTabber: concurrent session probe',
     'const tabA = page;',
     'const tabB = await page.context().newPage();',
     'await Promise.all([tabA.goto(url), tabB.goto(url)]);',
@@ -101,7 +101,7 @@ const ATTACK_PAYLOADS = {
     'await tabB.close();',
   ],
   'permission-denier': [
-    '// PermissionDenier: blocked capability probe',
+    '// PrivacyFirstUser: blocked capability probe',
     'await page.context().clearPermissions();',
     'page.on("dialog", dialog => dialog.dismiss());',
     'const triggers = await page.$$("button, [role=\\"button\\"], a");',

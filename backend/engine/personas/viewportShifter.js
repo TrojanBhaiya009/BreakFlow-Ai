@@ -5,7 +5,7 @@
  */
 
 export const metadata = {
-  name: 'Viewport Shifter',
+  name: 'Small-Screen User',
   icon: 'viewport',
   description: 'Resizes through mobile, tablet, and desktop viewports',
   detects: ['horizontal overflow', 'tiny tap targets', 'blocked responsive layouts']
@@ -78,7 +78,7 @@ export async function execute(page, url, logger) {
 
       if (result.overflowPx > 4) {
         logger.addIssue({
-          persona: 'Viewport Shifter',
+          persona: 'Small-Screen User',
           severity: viewport.width <= 375 ? 'warning' : 'info',
           category: 'responsive_layout',
           title: 'Horizontal Overflow at Viewport Width',
@@ -89,7 +89,7 @@ export async function execute(page, url, logger) {
 
       if (result.tinyTargets.length > 0) {
         logger.addIssue({
-          persona: 'Viewport Shifter',
+          persona: 'Small-Screen User',
           severity: 'info',
           category: 'responsive_layout',
           title: 'Small Interactive Targets',
@@ -100,7 +100,7 @@ export async function execute(page, url, logger) {
 
       if (result.blockingFixed.length > 0) {
         logger.addIssue({
-          persona: 'Viewport Shifter',
+          persona: 'Small-Screen User',
           severity: 'warning',
           category: 'responsive_layout',
           title: 'Large Fixed Element May Block Content',
@@ -110,11 +110,11 @@ export async function execute(page, url, logger) {
       }
     }
 
-    emit('Viewport Shifter persona completed');
+    emit('Small-Screen User persona completed');
   } catch (error) {
     emit(`Persona error: ${error.message}`);
     logger.addIssue({
-      persona: 'Viewport Shifter',
+      persona: 'Small-Screen User',
       severity: 'warning',
       category: 'responsive_layout',
       title: 'Persona Execution Error',

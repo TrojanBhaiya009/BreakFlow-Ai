@@ -169,6 +169,8 @@ export async function runTest(testRunId, targetUrl, selectedPersonas) {
           });
         }
 
+        await logger.waitForEvidence();
+
         // Cleanup
         await page.close().catch(() => {});
         await context.close().catch(() => {});
@@ -197,6 +199,7 @@ export async function runTest(testRunId, targetUrl, selectedPersonas) {
 
     // Calculate results
     sendEvent(testRunId, 'progress', { message: 'Analyzing results...', phase: 'analysis' });
+    await logger.waitForEvidence();
 
     const rawIssues = logger.getIssues();
     const issues = deduplicateIssues(rawIssues);

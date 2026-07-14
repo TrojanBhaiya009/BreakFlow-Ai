@@ -5,7 +5,7 @@
  */
 
 export const metadata = {
-  name: 'Contradictory Input User',
+  name: 'Hostile Inputter',
   icon: '🔵',
   description: 'Enters invalid, contradictory, and edge-case data in forms',
   detects: ['input validation gaps', 'injection vulnerabilities', 'type coercion bugs', 'boundary errors']
@@ -190,7 +190,7 @@ export async function execute(page, url, logger) {
 
             if (!hasValidationError && evilValue.includes('<script>')) {
               logger.addIssue({
-                persona: 'Contradictory Input User',
+                persona: 'Hostile Inputter',
                 severity: 'critical',
                 category: 'input_validation',
                 title: 'Potential XSS: Script Tag Accepted',
@@ -201,7 +201,7 @@ export async function execute(page, url, logger) {
 
             if (!hasValidationError && evilValue.includes('DROP TABLE')) {
               logger.addIssue({
-                persona: 'Contradictory Input User',
+                persona: 'Hostile Inputter',
                 severity: 'critical',
                 category: 'input_validation',
                 title: 'Potential SQL Injection: SQL Syntax Accepted',
@@ -253,7 +253,7 @@ export async function execute(page, url, logger) {
               const currentUrl = page.url();
               if (currentUrl !== url) {
                 logger.addIssue({
-                  persona: 'Contradictory Input User',
+                  persona: 'Hostile Inputter',
                   severity: 'warning',
                   category: 'input_validation',
                   title: 'Form Accepted Invalid Data',
@@ -273,12 +273,12 @@ export async function execute(page, url, logger) {
       }
     }
 
-    emit('Contradictory Input User persona completed');
+    emit('Hostile Inputter persona completed');
 
   } catch (error) {
     emit(`Persona error: ${error.message}`);
     logger.addIssue({
-      persona: 'Contradictory Input User',
+      persona: 'Hostile Inputter',
       severity: 'warning',
       category: 'navigation_error',
       title: 'Persona Execution Error',

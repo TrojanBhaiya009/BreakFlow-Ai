@@ -6,7 +6,7 @@
  */
 
 export const metadata = {
-  name: 'Rage Clicker',
+  name: 'Impatient Buyer',
   icon: '🔴',
   description: 'Clicks buttons and interactive elements rapidly and repeatedly',
   detects: ['duplicate submissions', 'UI freezes', 'double-processing', 'race conditions']
@@ -77,7 +77,7 @@ export async function execute(page, url, logger) {
           
           if (responseTime > 3000) {
             logger.addIssue({
-              persona: 'Rage Clicker',
+              persona: 'Impatient Buyer',
               severity: 'critical',
               category: 'ui_freeze',
               title: 'UI Freeze After Rapid Clicking',
@@ -87,7 +87,7 @@ export async function execute(page, url, logger) {
           }
         } catch (e) {
           logger.addIssue({
-            persona: 'Rage Clicker',
+            persona: 'Impatient Buyer',
             severity: 'critical',
             category: 'ui_freeze',
             title: 'Page Crashed After Rapid Clicking',
@@ -135,12 +135,12 @@ export async function execute(page, url, logger) {
       } catch (e) {}
     }
 
-    emit('Rage Clicker persona completed');
+    emit('Impatient Buyer persona completed');
 
   } catch (error) {
     emit(`Persona error: ${error.message}`);
     logger.addIssue({
-      persona: 'Rage Clicker',
+      persona: 'Impatient Buyer',
       severity: 'warning',
       category: 'navigation_error',
       title: 'Persona Execution Error',

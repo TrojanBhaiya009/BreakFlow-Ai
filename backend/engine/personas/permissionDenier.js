@@ -5,7 +5,7 @@
  */
 
 export const metadata = {
-  name: 'Permission Denier',
+  name: 'Privacy-First User',
   icon: 'permission',
   description: 'Denies browser capabilities such as location, camera, and notifications',
   detects: ['missing permission fallbacks', 'blocked workflow loops', 'unclear recovery states']
@@ -71,7 +71,7 @@ export async function execute(page, url, logger) {
 
       if (!FEEDBACK_RE.test(after) && changedText.trim().length < 8) {
         logger.addIssue({
-          persona: 'Permission Denier',
+          persona: 'Privacy-First User',
           severity: 'info',
           category: 'permission_handling',
           title: 'Permission Flow Has No Visible Fallback',
@@ -85,11 +85,11 @@ export async function execute(page, url, logger) {
       emit('No permission-related controls found');
     }
 
-    emit('Permission Denier persona completed');
+    emit('Privacy-First User persona completed');
   } catch (error) {
     emit(`Persona error: ${error.message}`);
     logger.addIssue({
-      persona: 'Permission Denier',
+      persona: 'Privacy-First User',
       severity: 'warning',
       category: 'permission_handling',
       title: 'Persona Execution Error',

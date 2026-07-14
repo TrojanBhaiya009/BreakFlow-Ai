@@ -18,6 +18,51 @@ function deduplicateRecommendations(recommendations = []) {
   });
 }
 
+const PERSONA_NAME_BY_ID = {
+  'rage-clicker': 'Impatient Buyer',
+  'half-fill-user': 'Distracted Signup',
+  'confused-navigator': 'Lost Visitor',
+  'slow-network-user': 'Bad Wi-Fi User',
+  'contradictory-input-user': 'Hostile Inputter',
+  'viewport-shifter': 'Small-Screen User',
+  'multi-tab-user': 'Power Tabber',
+  'permission-denier': 'Privacy-First User'
+};
+
+const LEGACY_PERSONA_NAME_BY_ID = {
+  'rage-clicker': 'Rage Clicker',
+  'half-fill-user': 'Half-Fill User',
+  'confused-navigator': 'Confused Navigator',
+  'slow-network-user': 'Slow Network User',
+  'contradictory-input-user': 'Contradictory Input User',
+  'viewport-shifter': 'Viewport Shifter',
+  'multi-tab-user': 'Multi-Tab User',
+  'permission-denier': 'Permission Denier'
+};
+
+function normalizePersona(value = '') {
+  return String(value).toLowerCase().replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function issuePersonas(issue = {}) {
+  const personas = issue.details?.affected_personas?.length
+    ? issue.details.affected_personas
+    : [issue.persona];
+
+  return personas.filter(Boolean).map(normalizePersona);
+}
+
+function issueMatchesPersona(issue, personaId) {
+  const aliases = [
+    personaId,
+    PERSONA_NAME_BY_ID[personaId],
+    LEGACY_PERSONA_NAME_BY_ID[personaId]
+  ].filter(Boolean).map(normalizePersona);
+
+  const issueAliases = issuePersonas(issue);
+  return aliases.some(alias => issueAliases.includes(alias));
+}
+
 /**
  * GET /api/reports/:id
  * Get full test report with issues, score, and recommendations
@@ -65,11 +110,7 @@ router.get('/:id', async (req, res) => {
     // Build persona breakdown
     const personaBreakdown = {};
     for (const persona of (testRun.personas || [])) {
-      const personaIssues = uniqueIssues.filter(i => 
-        (i.details?.affected_personas || [i.persona]).some(p =>
-          p?.toLowerCase().replace(/\s+/g, '-') === persona || p === persona
-        )
-      );
+      const personaIssues = uniqueIssues.filter(i => issueMatchesPersona(i, persona));
       personaBreakdown[persona] = {
         totalIssues: personaIssues.length,
         critical: personaIssues.filter(i => i.severity === 'critical').length,
@@ -162,11 +203,7 @@ router.get('/:id/pdf', async (req, res) => {
     // Build summary
     const personaBreakdown = {};
     for (const persona of (testRun.personas || [])) {
-      const personaIssues = uniqueIssues.filter(i =>
-        (i.details?.affected_personas || [i.persona]).some(p =>
-          p?.toLowerCase().replace(/\s+/g, '-') === persona || p === persona
-        )
-      );
+      const personaIssues = uniqueIssues.filter(i => issueMatchesPersona(i, persona));
       personaBreakdown[persona] = {
         totalIssues: personaIssues.length,
         critical: personaIssues.filter(i => i.severity === 'critical').length,

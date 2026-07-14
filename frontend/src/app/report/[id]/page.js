@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { use } from 'react';
 import Header from '../../components/Header';
 import ScoreGauge, { getScoreColor } from '../../components/ScoreGauge';
+import { formatPersonaName } from '../../components/PersonaSelector';
 import {
   IconArrowLeft, IconGlobe, IconClock,
   IconChevronDown, IconChevronRight,
@@ -244,7 +245,7 @@ export default function ReportPage({ params }) {
                 const pd = summary.personaBreakdown?.[pid];
                 return (
                   <span key={pid} className="badge badge-neutral">
-                    {fmtCat(pid)} {pd && <span style={{ opacity: 0.5 }}>({pd.totalIssues})</span>}
+                    {formatPersonaName(pid)} {pd && <span style={{ opacity: 0.5 }}>({pd.totalIssues})</span>}
                   </span>
                 );
               })}
@@ -278,10 +279,56 @@ export default function ReportPage({ params }) {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '4px', flexWrap: 'wrap' }}>
                         <span className={`badge ${sevBadge(issue.severity)}`}>{issue.severity}</span>
                         <span className="badge badge-ember">{fmtCat(issue.category)}</span>
-                        <span className="text-mono" style={{ fontSize: '0.625rem', color: 'var(--muted)' }}>{issue.persona}</span>
+                        <span className="text-mono" style={{ fontSize: '0.625rem', color: 'var(--muted)' }}>
+                          {formatPersonaName(issue.persona)}
+                        </span>
                       </div>
                       <h4 style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '2px' }}>{issue.title}</h4>
                       <p className="text-small">{issue.description}</p>
+
+                      {getEvidenceUrl(issue) && (
+                        <div style={{
+                          marginTop: 'var(--space-3)',
+                          border: '1px solid var(--line)',
+                          background: 'var(--surface-2)',
+                          borderRadius: 'var(--radius-md)',
+                          overflow: 'hidden',
+                        }}>
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            gap: 'var(--space-3)',
+                            padding: '7px 10px',
+                            borderBottom: '1px solid var(--line)',
+                          }}>
+                            <span className="text-label">Screenshot Evidence</span>
+                            {issue.details?.evidence?.pageUrl && (
+                              <span className="text-mono" style={{
+                                color: 'var(--muted)',
+                                fontSize: '0.5625rem',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                maxWidth: '48%',
+                              }}>
+                                {issue.details.evidence.pageUrl}
+                              </span>
+                            )}
+                          </div>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={getEvidenceUrl(issue)}
+                            alt={`${issue.title} screenshot evidence`}
+                            style={{
+                              display: 'block',
+                              width: '100%',
+                              maxHeight: '280px',
+                              objectFit: 'cover',
+                              objectPosition: 'top left',
+                            }}
+                          />
+                        </div>
+                      )}
 
                       <div style={{ marginTop: 'var(--space-3)' }}>
                         {!generatedFixes[i] ? (
@@ -414,6 +461,13 @@ function prioColor(p) {
 
 function sourceLabel(source) {
   return source === 'codex' ? 'analysis' : source;
+}
+
+function getEvidenceUrl(issue) {
+  const screenshotUrl = issue?.details?.evidence?.screenshotUrl;
+  if (!screenshotUrl) return '';
+  if (/^https?:\/\//i.test(screenshotUrl)) return screenshotUrl;
+  return `${API_URL}${screenshotUrl}`;
 }
 
 function fmtDuration(ms) {

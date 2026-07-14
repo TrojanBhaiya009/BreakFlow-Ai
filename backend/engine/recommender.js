@@ -7,6 +7,7 @@
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
 import { deduplicateIssues } from './issueNormalizer.js';
+import { getOpenAIConfig } from './openaiConfig.js';
 dotenv.config();
 
 // ============================================
@@ -266,17 +267,17 @@ export function generateRuleBasedRecommendations(issues) {
  * Uses the CODEX_API_KEY — the only LLM provider
  */
 export async function generateCodexRecommendations(issues, targetUrl) {
-  const codexKey = process.env.CODEX_API_KEY;
+  const { apiKey, keySource, model, active } = getOpenAIConfig();
 
-  if (!codexKey || codexKey.trim() === '' || codexKey === 'your_codex_api_key_here') {
-    console.log('[Recommender] Codex API key not configured — using rule-based recommendations only');
+  if (!active) {
+    console.log('[Recommender] OpenAI API key not configured — using rule-based recommendations only');
     return [];
   }
 
   try {
     const uniqueIssues = deduplicateIssues(issues || []);
     const client = new OpenAI({
-      apiKey: codexKey,
+      apiKey,
     });
 
     // Deduplicate and compress issues
@@ -298,7 +299,7 @@ export async function generateCodexRecommendations(issues, targetUrl) {
     }
 
     const compressedIssues = Array.from(compressedMap.values());
-    console.log(`[Recommender] Compressed ${issues.length} raw issues into ${compressedIssues.length} unique for Codex.`);
+    console.log(`[Recommender] Calling OpenAI model "${model}" with ${keySource}; compressed ${issues.length} raw issues into ${compressedIssues.length} unique issues.`);
 
     const formattedIssues = compressedIssues.slice(0, 80).map((issue, idx) => {
       return `${idx + 1}. [${issue.severity.toUpperCase()}] Category: ${issue.category} (Occurrences: ${issue.count})
@@ -329,7 +330,7 @@ ${formattedIssues}
 Respond with ONLY a JSON array:`;
 
     const completion = await client.chat.completions.create({
-      model: 'codex-mini-latest',
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
@@ -370,19 +371,22 @@ Respond with ONLY a JSON array:`;
  * Generate a fix for a specific issue using Codex
  */
 export async function generateCodexFix(issue, targetUrl) {
-  const codexKey = process.env.CODEX_API_KEY;
+  const { apiKey, keySource, model, active } = getOpenAIConfig();
 
-  if (!codexKey || codexKey.trim() === '' || codexKey === 'your_codex_api_key_here') {
+  if (!active) {
+    console.log('[Recommender] OpenAI API key not configured — using local repair fallback');
     return null;
   }
 
   try {
     const client = new OpenAI({
-      apiKey: codexKey,
+      apiKey,
     });
 
+    console.log(`[Recommender] Calling OpenAI model "${model}" with ${keySource} for one-click fix.`);
+
     const completion = await client.chat.completions.create({
-      model: 'codex-mini-latest',
+      model,
       messages: [
         {
           role: 'system',

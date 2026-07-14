@@ -15,6 +15,7 @@
  */
 
 import dotenv from 'dotenv';
+import { getOpenAIConfig } from './openaiConfig.js';
 dotenv.config();
 
 const CODEX_PERSONAS = [
@@ -94,8 +95,19 @@ Return executable test code that probes for logic vulnerabilities.`,
  * Check if Codex is configured and active
  */
 export function isCodexActive() {
-  const apiKey = process.env.CODEX_API_KEY;
-  return !!(apiKey && apiKey.trim() !== '' && apiKey !== 'your_codex_api_key_here');
+  return getOpenAIConfig().active;
+}
+
+export function getCodexStatus() {
+  const { active, keySource, model } = getOpenAIConfig();
+  return {
+    active,
+    keySource,
+    model,
+    message: active
+      ? `OpenAI-backed repair analysis is configured with ${keySource}`
+      : 'OpenAI-backed repair analysis is not active. Set CODEX_API_KEY or OPENAI_API_KEY in backend/.env.',
+  };
 }
 
 /**
@@ -118,14 +130,16 @@ export function getCodexPersonas() {
  */
 export async function runCodexTest(targetUrl, selectedPersonas = []) {
   if (!isCodexActive()) {
-    console.log('[Codex] Red-teaming is not active — CODEX_API_KEY not configured');
+    console.log('[Codex] Red-teaming is not active — API key not configured');
     return {
       active: false,
-      message: 'Codex red-teaming is not active. Set CODEX_API_KEY in your .env file.',
+      message: 'Codex red-teaming is not active. Set CODEX_API_KEY or OPENAI_API_KEY in backend/.env.',
       findings: [],
     };
   }
 
+  // Placeholder: this endpoint does not call OpenAI yet. The API-backed paths
+  // currently live in recommender.js for report recommendations and draft fixes.
   // When active, this would:
   // 1. Initialize Codex client with API key
   // 2. For each selected persona, generate exploit code via Codex
@@ -137,7 +151,7 @@ export async function runCodexTest(targetUrl, selectedPersonas = []) {
   
   return {
     active: true,
-    message: 'Codex red-teaming completed',
+    message: 'Codex red-teaming endpoint is configured but not implemented yet. Use report recommendations or Draft repair to trigger OpenAI calls.',
     findings: [],
     personasRun: selectedPersonas,
     targetUrl,
